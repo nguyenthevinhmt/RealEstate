@@ -1,0 +1,5 @@
+{
+  "ConnectionStrings": {
+    "Default": "Data Source=VINHNT-MB\\SQLEXPRESS;Initial Catalog=timphong123;Trusted_Connection=True; TrustServerCertificate = True"
+  }
+}
