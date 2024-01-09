@@ -12,7 +12,9 @@ namespace RealEstate.Domain.Entities
         [Key]
         public int Id { get; set; }
         public int PostId { get; set; }
-        public int UserId {  get; set; }
+        public Post Post { get; set; } = new();
+        public int? UserId {  get; set; }
+        public User? User { get; set; }
         #region audit
         public DateTime? CreatedDate { get; set; }
         public int? CreatedBy { get; set; }

@@ -13,8 +13,30 @@ namespace RealEstate.Domain.Entities
         public int Id { get; set; }
         public string Title { get; set; } = null!;
         public string Description { get; set; } = null!;
+        /// <summary>
+        /// Tỉnh/Thành phố
+        /// </summary>
+        [MaxLength(50)]
+        public string Province { get; set; } = null!;
+        /// <summary>
+        /// Quận/huyện
+        /// </summary>
+        [MaxLength(50)]
+        public string Distinct { get; set; } = null!;
+        /// <summary>
+        /// Phường xã
+        /// </summary>
+        [MaxLength(50)]
+        public string Ward { get; set; } = null!;
+        /// <summary>
+        /// Số nhà - đường 
+        /// </summary>
+        public string Street { get; set; } = null!;
+        [MaxLength(250)]
         public string? DetailAddress {  get; set; }
-        [Required(ErrorMessage = "Trường diện tích không được bỏ trống")]
+        /// <summary>
+        /// Diện tích
+        /// </summary>
         [Range(1, double.MaxValue)]
         public double Area {  get; set; }
         /// <summary>
@@ -40,8 +62,13 @@ namespace RealEstate.Domain.Entities
         /// </summary>
         public int? ApproveBy { get; set; }
         public int UserId { get; set; }
+        public User User { get; set; } = new();
         public int PostTypeId {  get; set; }
+        public PostType PostType { get; set; } = new();
         public int RealEstateTypeId { get;set; }
+        public RealEstateType RealEstateType { get; set; } = new();
+        public List<Favorite>? Favorites {  get; set; }
+        public List<Media>? Medias {  get; set; }
         #region audit
         public DateTime? CreatedDate { get; set; }
         public int? CreatedBy { get; set; }

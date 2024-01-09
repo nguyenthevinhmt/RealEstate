@@ -103,7 +103,7 @@ namespace RealEstate.Application.AuthModule.Implements
 
             var key = Encoding.ASCII.GetBytes(_jwtSetting.Key);
             var claims = new List<Claim> {
-                new Claim(ClaimTypes.Email, user.Email),
+                new Claim(ClaimTypes.Name, user.Email),
                 new Claim(JwtRegisteredClaimNames.Sub, userId.Id.ToString()),
                 new Claim(CustomClaimTypes.UserType, userId.UserType.ToString())
             };

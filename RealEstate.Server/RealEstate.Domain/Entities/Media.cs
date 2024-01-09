@@ -18,6 +18,7 @@ namespace RealEstate.Domain.Entities
         [MaxLength(2048)]
         public string MediaUrl { get; set; } = null!;
         public int PostId { get; set; }
+        public Post Post { get; set; } = new();
         #region audit
         public DateTime? CreatedDate { get; set; }
         public int? CreatedBy { get; set; }

@@ -11,6 +11,7 @@ namespace RealEstate.Domain.Entities
         public int Id {  get; set; }
         [MaxLength(100)]
         public string Name { get; set; } = null!;
+        public List<Post> Posts { get; set; } = new();
         #region audit
         public DateTime? CreatedDate { get; set; }
         public int? CreatedBy { get; set; }

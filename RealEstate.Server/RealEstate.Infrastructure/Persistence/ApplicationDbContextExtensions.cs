@@ -18,7 +18,8 @@ namespace RealEstate.Infrastructure.Persistence
                     Password = PasswordHasher.HashPassword("123qwe"),
                     Fullname = "admin",
                     UserType = UserType.ADMIN,
-                    Status = UserStatus.ACTIVE
+                    Status = UserStatus.ACTIVE,
+                    PhoneNumber = "0972808703"
                 },
                 new User
                 {
@@ -27,7 +28,8 @@ namespace RealEstate.Infrastructure.Persistence
                     Password = PasswordHasher.HashPassword("123qwe"),
                     Fullname = "admin",
                     UserType = UserType.CUSTOMER,
-                    Status = UserStatus.ACTIVE
+                    Status = UserStatus.ACTIVE,
+                    PhoneNumber = "0972808703"
                 });
             #endregion
         }

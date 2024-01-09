@@ -18,6 +18,7 @@ namespace RealEstate.Domain.Entities
         public DateTime? ModifiedDate { get; set; }
         public int? ModifiedBy { get; set; }
         public bool Deleted { get; set; }
+        public List<Post> Posts { get; set; } = new();
         #endregion
     }
 }

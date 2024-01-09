@@ -16,11 +16,16 @@ namespace RealEstate.Domain.Entities
         [MaxLength(100)]
         public string Sex { get; set; } = null!;
         [MaxLength(100)]
-        public string Nationality {  get; set; } = null!;
+        public string Nationality { get; set; } = null!;
         [MaxLength(250)]
-        public string PlaceOfOrigin {  get; set; } = null!;
+        public string PlaceOfOrigin { get; set; } = null!;
         [MaxLength(250)]
-        public string PlaceOfResidence {  get; set; } = null!;
+        public string PlaceOfResidence { get; set; } = null!;
         public DateTime ExpiredDate { get; set; }
+        public int UserId { get; set; }
+        public User User { get; set; } = new();
+        public DateTime CreateDate {  get; set; }
+        public int CreateBy {  get; set; }
+        public bool Deleted { get; set; }
     }
 }

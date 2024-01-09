@@ -18,6 +18,7 @@ namespace RealEstate.Domain.Entities
         /// Mã số ví
         /// </summary>
         public int WalletID { get; set; }
+        public Wallet Wallet { get; set; } = new();
         /// <summary>
         /// Số tiền giao dịch
         /// </summary>
@@ -41,6 +42,6 @@ namespace RealEstate.Domain.Entities
         /// <summary>
         /// Ngày tạo giao dịch
         /// </summary>
-        public DateTime CreateAt { get; set; }
+        public DateTime CreateDate { get; set; }
     }
 }
