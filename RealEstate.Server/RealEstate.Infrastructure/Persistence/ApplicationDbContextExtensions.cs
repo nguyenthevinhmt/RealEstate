@@ -19,7 +19,8 @@ namespace RealEstate.Infrastructure.Persistence
                     Fullname = "admin",
                     UserType = UserType.ADMIN,
                     Status = UserStatus.ACTIVE,
-                    PhoneNumber = "0972808703"
+                    PhoneNumber = "0972808703",
+                    Username = "admin",
                 },
                 new User
                 {
@@ -29,7 +30,8 @@ namespace RealEstate.Infrastructure.Persistence
                     Fullname = "admin",
                     UserType = UserType.CUSTOMER,
                     Status = UserStatus.ACTIVE,
-                    PhoneNumber = "0972808703"
+                    PhoneNumber = "0972808703",
+                    Username= "customer",
                 });
             #endregion
         }

@@ -15,6 +15,11 @@ namespace RealEstate.Application.AuthModule.Abstracts
         /// </summary>
         /// <param name="input"></param>
         void Register(RegisterRequestDto input);
+        /// <summary>
+        /// RefreshToken
+        /// </summary>
+        /// <param name="input"></param>
+        /// <returns></returns>
         public TokenDto RefreshToken(TokenDto input);
     }
 }

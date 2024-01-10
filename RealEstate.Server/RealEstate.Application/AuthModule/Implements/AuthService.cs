@@ -12,6 +12,9 @@ using System.Security.Claims;
 using System.Security.Cryptography;
 using System.Text.RegularExpressions;
 using System.Text;
+using System.Runtime.CompilerServices;
+using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.Logging;
 
 namespace RealEstate.Application.AuthModule.Implements
 {
@@ -19,17 +22,21 @@ namespace RealEstate.Application.AuthModule.Implements
     {
         private readonly ApplicationDbContext _context;
         private readonly JwtSettings _jwtSetting;
-        public AuthService(ApplicationDbContext context, IOptions<JwtSettings> options)
+        private readonly IHttpContextAccessor _httpContext;
+        private readonly ILogger _logger;
+        public AuthService(ApplicationDbContext context, IOptions<JwtSettings> options, IHttpContextAccessor httpContext, ILogger<AuthService> logger)
         {
             _context = context;
             _jwtSetting = options.Value;
+            _httpContext = httpContext;
+            _logger = logger;
         }
         public TokenDto Login(LoginRequestDto input)
         {
-            var user = _context.Users.FirstOrDefault(x => x.Email == input.Email);
+            var user = _context.Users.FirstOrDefault(x => x.Username == input.Username);
             if (user == null)
             {
-                throw new UserFriendlyException($"Không tìm thấy người dùng có email {input.Email}");
+                throw new UserFriendlyException($"Tài khoản không tồn tại!");
             }
             if (!PasswordHasher.VerifyPassword(input.Password, user.Password))
             {
@@ -38,7 +45,7 @@ namespace RealEstate.Application.AuthModule.Implements
             var newAccessToken = CreateJwt(input);
             var newRefreshToken = CreateRefreshToken();
             user.RefreshToken = newRefreshToken;
-            user.RefreshTokenExpiryTime = DateTime.Now.AddDays(3);
+            user.RefreshTokenExpiryTime = DateTime.Now.AddSeconds(15);
             _context.SaveChangesAsync();
             return new TokenDto
             {
@@ -49,11 +56,8 @@ namespace RealEstate.Application.AuthModule.Implements
 
         public void Register(RegisterRequestDto input)
         {
-            var check = _context.Users.FirstOrDefault(x => x.Email == input.Email);
-            if (check != null)
-            {
-                throw new UserFriendlyException("Email đã tồn tại trong hệ thống");
-            }
+            var checkMailExist = _context.Users.FirstOrDefault(x => x.Email == input.Email) ?? throw new UserFriendlyException("Email đã tồn tại");
+            var checkUsernameExist = _context.Users.FirstOrDefault(x => x.Username == input.Username) ?? throw new UserFriendlyException("Tên người dùng đã tồn tại");
             if (input.Password.Length < 6)
             {
                 throw new UserFriendlyException("Mật khẩu phải dài hơn 6 kí tự");
@@ -80,12 +84,15 @@ namespace RealEstate.Application.AuthModule.Implements
             string accessToken = input.AccessToken;
             string refreshToken = input.RefreshToken;
             var principal = GetPrincipleFromExpiredToken(accessToken);
-            var email = principal?.Identity?.Name;
+            var username = principal?.Identity?.Name;
 
-            var user = _context.Users.FirstOrDefault(u => u.Email == email);
+            var user = _context.Users.FirstOrDefault(u => u.Username == username);
             if (user is null || user.RefreshToken != refreshToken || user.RefreshTokenExpiryTime <= DateTime.Now)
+            {
+                Revoke();
                 throw new UserFriendlyException("Invalid Request");
-            var newAccessToken = CreateJwt(new LoginRequestDto { Email = user.Email, Password = user.Password });
+            }
+            var newAccessToken = CreateJwt(new LoginRequestDto { Username = user.Username, Password = user.Password });
             var newRefreshToken = CreateRefreshToken();
             user.RefreshToken = newRefreshToken;
             _context.SaveChangesAsync();
@@ -98,21 +105,24 @@ namespace RealEstate.Application.AuthModule.Implements
         private string CreateJwt(LoginRequestDto user)
         {
             var jwtToken = new JwtSecurityTokenHandler();
-            var userId = _context.Users.FirstOrDefault(u => u.Email == user.Email)
+            var findUser = _context.Users.FirstOrDefault(u => u.Username == user.Username)
                         ?? throw new UserFriendlyException("Tài khoản không tồn tại");
 
             var key = Encoding.ASCII.GetBytes(_jwtSetting.Key);
             var claims = new List<Claim> {
-                new Claim(ClaimTypes.Name, user.Email),
-                new Claim(JwtRegisteredClaimNames.Sub, userId.Id.ToString()),
-                new Claim(CustomClaimTypes.UserType, userId.UserType.ToString())
+                new Claim(CustomClaimTypes.UserId, findUser.Id.ToString()),
+                new Claim(ClaimTypes.Name, findUser.Username),
+                new Claim(CustomClaimTypes.Email, findUser.Email),
+                new Claim(CustomClaimTypes.Phone, findUser.PhoneNumber),
+                new Claim(JwtRegisteredClaimNames.Sub, findUser.Id.ToString()),
+                new Claim(CustomClaimTypes.UserType, findUser.UserType.ToString())
             };
             var credentials = new SigningCredentials(new SymmetricSecurityKey(key), SecurityAlgorithms.HmacSha256);
 
             var token = new JwtSecurityToken(
                 issuer: _jwtSetting.ValidIssuer,
                 audience: _jwtSetting.ValidAudience,
-                expires: DateTime.Now.AddHours(1),
+                expires: DateTime.Now.AddSeconds(5),
                 claims: claims,
                 signingCredentials: credentials
             );
@@ -144,8 +154,23 @@ namespace RealEstate.Application.AuthModule.Implements
             var principal = tokenHandler.ValidateToken(token, tokenValidationParameters, out securityToken);
             var jwtSecurityToken = securityToken as JwtSecurityToken;
             if (jwtSecurityToken == null || !jwtSecurityToken.Header.Alg.Equals(SecurityAlgorithms.HmacSha256, StringComparison.InvariantCultureIgnoreCase))
+            {
                 throw new UserFriendlyException("Hết hạn đăng nhập, vui lòng đăng nhập lại");
+            }
             return principal;
+        }
+        /// <summary>
+        /// Xóa refresh token khi hết hạn
+        /// </summary>
+        /// <exception cref="UserFriendlyException"></exception>
+        private void Revoke()
+        {
+            var userId = _httpContext.GetCurrentUserId();
+            _logger.LogInformation($"userId: {userId}");
+            var user = _context.Users.FirstOrDefault(c => c.Id == userId) ?? throw new UserFriendlyException("Không tìm thấy người dùng");
+            user.RefreshToken = "";
+            user.RefreshTokenExpiryTime = null;
+            _context.SaveChanges();
         }
     }
 }

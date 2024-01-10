@@ -35,5 +35,12 @@ namespace RealEstate.Application.AuthModule.Dtos
             get => _email;
             set => _email = value.Trim();
         }
+        private string _username = null!;
+        [Required(ErrorMessage = "Tên người dùng không được để trống!")]
+        public string Username
+        {
+            get => _username;
+            set => _username = value.Trim();
+        }
     }
 }

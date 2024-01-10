@@ -14,13 +14,15 @@ namespace RealEstate.Domain.Entities
         public string Fullname { get; set; } = null!;
         [MaxLength(50)]
         public string Email { get; set; } = null!;
+        [MaxLength(50)]
+        public string Username { get; set; } = null!;
         [MaxLength(512)]
         public string Password { get; set; } = null!;
         [MaxLength(12)]
         public string PhoneNumber { get; set; } = null!;
         [MaxLength(512)]
         public string? RefreshToken { get; set; }
-        public DateTime RefreshTokenExpiryTime { get; set; }
+        public DateTime? RefreshTokenExpiryTime { get; set; }
         /// <summary>
         /// Đường dẫn link ảnh
         /// </summary>
@@ -33,6 +35,10 @@ namespace RealEstate.Domain.Entities
         /// <see cref="UserStatus"/>
         /// </summary>
         public int Status { get; set; }
+        /// <summary>
+        /// Mã OTP
+        /// </summary>
+        public string? Otp { get; set; }
         public DateTime CreateDate { get; set; }
         public bool Deleted {  get; set; }
         public List<Wallet> Wallets { get; } = new();

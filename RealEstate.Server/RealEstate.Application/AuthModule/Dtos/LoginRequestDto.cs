@@ -2,14 +2,14 @@
 {
     public class LoginRequestDto
     {
-        private string _email { get; set; } = null!;
+        private string _username { get; set; } = null!;
         /// <summary>
-        /// Số điện thoại đăng kí
+        /// Tên người dùng
         /// </summary>
-        public string Email
+        public string Username
         {
-            get => _email;
-            set => _email = value.Trim();
+            get => _username;
+            set => _username = value.Trim();
         }
         private string _password { get; set; } = null!;
         /// <summary>

@@ -3,7 +3,8 @@
     public static class CustomClaimTypes
     {
         public const string UserType = "user_type";
-        public const string Name = "email";
-        public const string Phone = "phone";
+        public const string UserId = "user_id";
+        public const string Email = "user_email";
+        public const string Phone = "user_phone";
     }
 }
